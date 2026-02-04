@@ -98,9 +98,5 @@ ADD  r2, r1, r0 ; r2 := r1 + r0
 
 ---
 
-If you want, I can:
-- Split this into one Markdown file per slide,
-- Add a simple ASCII datapath diagram inline,
-- Create a slide deck (e.g., reveal.js or PDF-ready markdown).
-Tell me which you prefer and I’ll produce it next.
+
 ``` ````
