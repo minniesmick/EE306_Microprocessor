@@ -1,6 +1,5 @@
-Week	Subject	Status	Key Concepts
 # EE306 - Microprocessors 🧠
-
+Alper Yusuf Yaman 2026
 ![Status](https://img.shields.io/badge/Status-Active-success)
 ![University](https://img.shields.io/badge/MEF_University-CompEng-blue)
 ![Semester](https://img.shields.io/badge/Semester-Spring_2026-orange)
