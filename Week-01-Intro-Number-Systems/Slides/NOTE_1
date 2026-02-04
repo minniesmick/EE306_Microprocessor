@@ -1,0 +1,25 @@
+# Week 1: Introduction to Microprocessors 🧠
+
+--Combinational Circuit v Sequential Circuit--
+
+  Combinational Circuit is memoryless and only depends the input(s). ALU-Decoder-Mux is in this type
+
+  Sequential Circuit works with memory , Flip Flops, RAM- Control Unit is this type.
+
+Let say Decoder has "n" inputs then it has 2^n=8 outputs.
+Registers have 32 flip flops to store data's.
+Control Unit decides that next process will be "execution" or "fetch".
+Instruction Register works with Control Unit.
+
+  **Example**
+  Describe the process that, 2 integer that located on RAM. summation of them will bew placed on 3'rd register which r2.
+
+     :: load command for gathering values from RAM to registers ( r0 and r1) 
+     :::fetch:: CU says load means loading values from RAM
+     :::decode:::execution--> that address of the ram and it needs to be read, Ram outs adress' value to data bus , finally   
+        r0 and r1 have the values.
+    :: addition of r0 and r1::
+    :::add r2, r1, r0
+    :::CU fetch and decodes add as addition so it calls ALU(combinational) , ALU gets values of R0 and R1 and sums them at last 
+   puts the result on r2.
+
