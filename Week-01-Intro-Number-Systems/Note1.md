@@ -79,13 +79,6 @@ Notes:
 
 ---
 
-## Teaching / Slide tips
-- Use a simple datapath diagram showing Memory ↔ (Address bus, Data bus) ↔ CU / Registers ↔ ALU.
-- Animate or highlight the path of data during FETCH, DECODE, and EXECUTE so students can follow addresses, data, and control signals.
-- Emphasize the conceptual difference:
-  - Combinational = "compute" (stateless)
-  - Sequential = "store & control" (stateful)
-- Optionally include a small timing diagram showing when memory read, register write, and ALU ops occur relative to clock edges.
 
 ---
 
