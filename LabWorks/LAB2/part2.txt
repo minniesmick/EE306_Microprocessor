@@ -1,0 +1,26 @@
+.global _start
+_start:
+	//Use register addressing or pre-indexed addressing modes
+	ldr r0,=LOCA
+	ldr r1,[r0]
+	ldr r2,[r0,#4]
+	str r1,[r0,#4]
+	str r2,[r0]
+	//Use register addressing or post indexed addressing modes
+	ldr r0,=LOCA
+	ldr r1,[r0],#4
+	ldr r2,[r0]
+	str r1,[r0],#-4
+	str r2,[r0]
+	//use register addressing or pre indexed with writeback addressing modes
+    ldr r0,=LOCA
+	ldr r1,[r0]
+	ldr r2,[r0,#4]!
+	str r1,[r0]
+	str r2,[r0,#-4]!
+END:  B  END
+
+LOCA: .word 0xA
+	  .word 0xB
+	 .end
+	

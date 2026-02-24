@@ -1,0 +1,25 @@
+.global _start
+_start:
+	ldr r0,=LOC
+	
+	mov r1,#1
+	mov r2,#2
+	mov r3,#3
+	mov r4,#4
+	// store words to memory starting from the LOC
+	str r1,[r0]
+	//store content of r2 to next location
+	add r0,r0,#4 //watch r0
+	str r2,[r0]
+	//store r3
+	add r0,r0,#4
+	str r3,[r0]
+	//store final r4
+	add r0,r0,#4
+	str r4,[r0]
+	
+END:  B  END
+
+LOC: .word 0xA
+	 .end
+	
