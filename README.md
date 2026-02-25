@@ -38,9 +38,9 @@ EE306-Microprocessors/
 | **Week**  | **Subject**       | **Status** | **Key Concepts** |
 |--------|----------------------------------|-------|--------------------------------------------------|
 | **1**  | **Intro & Number Systems**       | **✅** | **Binary Arithmetic, Data Rep., 2's Complement** |
-| **2**  | **Microprocessor Architecture**  | **⏳** | **CPU Structure, Registers, Buses**              |
-| **3**  | **Instruction Set: Load/Store**  | **⬜** | **Load, Store, Addressing Modes Intro**          |
-| **4**  | **Addressing Modes**             | **⬜** | **Direct, Indirect, Register, Indexed Modes**    |
+| **2**  | **Microprocessor Architecture**  | **✅** | **CPU Structure, Registers, Buses**              |
+| **3**  | **Instruction Set: Load/Store**  | **✅** | **Load, Store, Addressing Modes Intro**          |
+| **4**  | **Addressing Modes**             | **⏳** | **Direct, Indirect, Register, Indexed Modes**    |
 | **5**  | **Instruction Set: Logic/Arith** | **⬜** | **AND, OR, ADD, SUB Instructions**               |
 | **6**  | **Data Movement Instructions**   | **⬜** | **MOV, MVN, Shift Operations**                   |
 | **7**  | **Programming Examples**         | **⬜** | **Assembly Coding Practices**                    |
