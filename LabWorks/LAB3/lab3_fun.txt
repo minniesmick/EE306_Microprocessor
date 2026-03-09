@@ -1,0 +1,35 @@
+.global _start
+
+.text
+_start:
+    LDR R0, =ENCRYPTED      // R0: Şifreli mesajın hafızadaki başlangıç adresi
+    MOV R3, #4              // R3: Sayaç (1 Word = 4 Byte olduğu için 4 kere döneceğiz)
+
+DECRYPT_LOOP:
+    // 1. ADIM: Hafızadan sıradaki 1 Byte'ı (harfi) oku
+    LDRB R1, [R0]           // Sadece 1 Byte al ve R1'e koy
+    
+    // 2. ADIM: En sağdaki (LSB) 0. biti kopar ve en sola (7. bit) fırlat!
+    AND R2, R1, #1          // Sayıyı 1 ile maskele (Sadece en sağdaki bit kalır)
+    LSL R2, R2, #7          // O kopardığın biti 7 kere sola kaydırıp 8-bitin başına al!
+    
+    // 3. ADIM: Orijinal Byte'ı 1 bit sağa kaydır
+    LSR R1, R1, #1          // R1'i mantıksal olarak sağa kaydır (Bits 7-1 -> 6-0'a kaysın)
+    
+    // 4. ADIM: Parçaları Birleştir (Manuel Döndürme Tamamlandı!)
+    ORR R1, R1, R2          // Sağa kaymış orijinal Byte (R1) ile başa aldığımız Biti (R2) VEYA'la!
+    
+    // 5. ADIM: Çözülmüş yeni harfi RAM'e geri yaz ve adresi kaydır
+    STRB R1, [R0], #1       // Post-indexed: Hem yaz hem de R0'ı bir sonraki harfe ayarla
+    
+    // 6. ADIM: Döngü Kontrolü
+    SUBS R3, R3, #1         // Sayacı 1 azalt
+    BNE DECRYPT_LOOP        // Sayaç 0 olmadıysa başa dön
+
+END_PROG:
+    B END_PROG              // Güvenli bitiş
+
+.data
+ENCRYPTED:
+    .word 0xCEC2D88C        // Çözülecek şifreli mesaj
+.end

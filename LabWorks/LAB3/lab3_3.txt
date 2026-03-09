@@ -1,0 +1,37 @@
+.global _start
+
+.text
+_start:
+    LDR R1, TEST_NUM        // Test edilecek sayıyı R1'e al
+    MOV R0, #0              // R0: Toplam '1' sayısını tutacağımız sayaç
+
+LOOP:
+    CMP R1, #0              // Sayı tamamen bitti mi (0 oldu mu)?
+    BEQ END                 // Bitiyse sayma işlemini bitir ve END'e dallan
+    
+    AND R2, R1, #1          // Sayının en sağındaki (LSB) biti koparıp R2'ye al
+    ADD R0, R0, R2          // Eğer o bit 1 ise R0 sayacını 1 artır, 0 ise değişmez
+    LSR R1, R1, #1          // Sayıyı 1 bit sağa kaydırıp sıradaki bite geç
+    
+    B LOOP                  // Sonraki bit için döngünün başına dön
+
+END:
+    // --- PARITY (EŞLİK) İŞLEMLERİ ---
+    // 1. EVEN PARITY (ÇİFT EŞLİK) BUL VE R8'İN LSB'SİNE YAZ
+    AND R7, R0, #1          // R0'daki toplam '1' sayısının Tek/Çift durumunu al (Çiftse 0, Tekse 1 çıkar)
+    MOV R8, R7              // Bu biti doğrudan R8'in en sağına (0. bit) yerleştir.
+
+    // 2. ODD PARITY (TEK EŞLİK) BUL
+    EOR R7, R7, #1          // Even Parity'i XOR (EOR) ile tersine çevir. (Odd Parity elde ettik)
+
+    // 3. ODD PARITY'Yİ R8'İN MSB'SİNE (31. BİTE) YAZ
+    // (İşte Barrel Shifter büyüsü: R7'yi havada 31 bit sola kaydır ve R8'e VEYA ile ekle)
+    ORR R8, R8, R7, LSL #31 
+
+FINISH:
+    B FINISH                // Programın çökmemesi için sonsuz döngüyle güvenli bitiş
+
+.data
+TEST_NUM:
+    .word 0x103FE00F        // test
+.end
