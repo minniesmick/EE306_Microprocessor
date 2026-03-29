@@ -1,0 +1,77 @@
+.global _start
+_start:
+
+	LDR R0, =0xff200050
+	LDR R1, =0xff200020
+	LDR R9, =SEG_TABLE
+	
+	LDR R12, =0xff200030
+	LDRB R8, [R9]
+	MOV R10, #1
+	
+loop1:
+	   
+	   STRB R8, [R1, R10] // r0 + #1 start hex1
+	   ADD R10, R10, #1
+	   CMP R10, #4
+	   
+	   BLT loop1
+
+	   
+	STRB R8, [R12] 		// hex4
+	STRB R8, [R12, #1]  // hex5
+loop:
+
+	LDR R2, [r0, #0x0c]	// if click button here edge affected
+	ANDS R3, R2, #0x1f 	// unitk k0-k4
+	BEQ loop
+	
+	STR R2, [r0, #0x0c]	// acknowledge
+	
+	LDR R4,[R0]
+	
+	CMP R2, #0x01		// pressed key0
+	BEQ  KEY04
+		
+	CMP R2, #0x02		// pressed key1
+	BEQ  KEY1
+
+	CMP R2, #0x04		// pressed key2
+	BEQ  KEY2
+
+	CMP R2, #0x08		// pressed key3
+	BEQ  KEY3
+
+	CMP R2, #0x10		// pressed key4
+	BEQ  KEY04
+	
+	// b loop other things
+
+KEY04:
+	LDR R9, =SEG_TABLE	// reset r9 base adress
+	LDRB R8, [R9, #5]! 	// reach from arr 5 --> hex 0x6d
+	STRB R8, [R1]		// and base = base + 5
+	b loop
+	
+KEY1:
+	LDRB R8, [R9,#1]!	// r9 = r9 + 1 pre index wb
+	STRB R8, [R1]
+	b loop
+	
+KEY2:
+	SUB R9, R9, #1		// r9 = r9 - 1
+	LDRB R8, [R9]		
+	STRB R8, [R1]
+	b loop
+
+KEY3:
+	LDR R9, =SEG_TABLE
+	LDRB R8, [R9]
+	STRB R8, [R1]
+	b loop
+
+
+SEG_TABLE: .byte 0x3F,0x06,0x5B,0x4F
+.byte 0x66,0x6D,0x7D,0x07
+.byte 0x7F,0x6F,0x0,0x0
+

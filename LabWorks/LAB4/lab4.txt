@@ -1,0 +1,95 @@
+.global _start
+_start:
+	LDR R0, Number // R0 = Number
+	LDR R9, =9999		// ??
+// Check if 0 <= Number <= 9999
+	CMP R0, R9
+	BGT Done
+	LDR R9, =0
+	CMP R0, R9
+	BLT Done
+// go to Done if the Number is not in the range
+	MOV R8, #0 // Will hold 4-digit 7-seg result
+// ---- Thousands ----
+// Call Division Subroutine to find the thousands digit.
+	MOV R1, #1000
+	BL Division	// R2 HOLD remainder
+	BL BIN_TO_7SEG
+	//LSL R8, R8, #8
+	ORR R8, R8, R2
+	
+// ---- Hundreds ----
+
+	MOV R1, #100
+	BL Division	// R2 HOLD remainder
+	BL BIN_TO_7SEG
+	LSL R8, R8, #8	// shift 1 byte
+	ORR R8, R8, R2	// put r2 value last 1 byte
+
+// ---- Tens ----
+	
+	MOV R1, #10
+	BL Division	// R2 HOLD remainder
+	BL BIN_TO_7SEG
+	LSL R8, R8, #8
+	ORR R8, R8, R2
+// ---- Ones ----
+
+	MOV R1, #1
+	BL Division	// R2 HOLD remainder
+	BL BIN_TO_7SEG
+	LSL R8, R8, #8
+	ORR R8, R8, R2
+	
+// Finally display content of R8 on the HEX3-0 and we are done.
+	LDR R0, =0xFF200020
+	MOV R6, #4
+	LOOPF:	
+			AND R5, R8, #0xff		// take last 1 byte
+			STRB R5, [R0], #1		// str 7-segment
+			LSR R8, R8, #8			// shift 1 byte
+			SUBS R6, R6, #1			// update loop counter
+			BNE LOOPF				// not eq 0
+			BEQ	Done
+									
+Done: B Done
+// ----------------------------
+// Division Subroutine
+// R0 / R1  R2
+// ----------------------------
+Division:
+	PUSH {LR}
+	MOV R7, #0 //	digit counter
+	LOOPD:	
+			CMP R0, R1			// R0 < R1 ?
+			BLT DONE1			// OK
+			SUB R0, R0, R1
+			ADD R7, R7, #1
+			
+			BGT LOOPD
+
+	//MOV R2, R7
+	///POP {PC}
+
+DONE1:	MOV R2, R7
+		POP {PC}
+// ----------------------------
+// Binary to 7-segment
+// Input: R2 (0{9)
+// Output: R2 = 7-seg code
+// ----------------------------
+	
+BIN_TO_7SEG:
+	
+	PUSH {R0, LR}
+	LDR R0, =SEG_TABLE
+	LDRB R2, [R0, R2]	// OFFSET UPDATE BASE + R2 = arr r2 value
+	POP {R0, PC}
+	
+// ----------------------------
+Number: .word 0007// we will change this number in lab.
+SEG_TABLE:  .byte 0x3F,0x06,0x5B,0x4F	
+.byte 0x66,0x6D,0x7D,0x07
+.byte 0x7F,0x6F,0x0,0x0
+			 
+			 

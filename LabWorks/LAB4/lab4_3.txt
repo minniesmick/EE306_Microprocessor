@@ -1,0 +1,126 @@
+.global _start
+_start:
+	LDR R1, =0xFF200050 // buttons
+	LDR R2, =0xFF200040	//	switches (SW)
+	LDR R3, =0xFF200020	// 7- segments
+
+	
+MAIN_LOOP:
+// Read EdgeCapture
+	LDR R4, [R1, #0x0c]
+// stay in the MAIN_LOOP
+	ANDS R12, R4, #0x1f
+// if not pressed.
+	BEQ MAIN_LOOP
+	
+// -------- KEY0: Show price --------
+	STR R4, [R1, #0x0c]
+// If KEY0 is NOT pressed
+	CMP R4, #0x01
+// go to CHECK_OTHER_KEYS
+	BNE CHECK_OTHER_KEYS
+//if KEY0 is pressed
+// Read SW
+// make sure it is between 0-15
+	LDR R6, [R2] 				// 10 bit open siwtch 0 -> 1, off 1 -> 0
+	LDR R0, [R9, R6, LSL #2]	// price arr index --> base + (r6 * 4)
+	
+// Take the price to R0 and go to task 1 :)
+	BL DISPLAY_4DIGIT // reuse Task 1 with nice combine.
+	B ACKNOWLEDGE // acknowledge the edge capture reg.
+	
+CHECK_OTHER_KEYS:
+// -------- Any other key: clear display --------
+	MOV R9, #0x0 // all leds off
+	STRB R9, [R3] // clear HEX0
+	STRB R9, [R3, #1] // clear HEX1
+	STRB R9, [R3, #2] // clear HEX2
+	STRB R9, [R3, #3] // clear HEX3
+	
+	// LDR R4, [R1, #0x0c]	// check again
+	B MAIN_LOOP
+
+
+ACKNOWLEDGE:
+
+	STR R4, [R0, #0x0c]  // clear EdgeCapture
+	B MAIN_LOOP
+
+// -------------------------------------------------
+// DISPLAY_4DIGIT
+// Input: R0 (0{9999)
+// Output: writes to HEX display
+// Uses: DIV and BIN_TO_7SEG (Task 1)
+// -------------------------------------------------
+DISPLAY_4DIGIT:
+	PUSH {R1-R7, LR}	// update r0 needed
+ 	// r0 hold number RANGE 0 - 9999
+	// SAME WITH TASK 1
+	MOV R1, #1000
+	BL Division
+	BL Bin_t0_7Seg
+	ORR R8,R8, R2
+	
+	MOV R1, #100
+	BL Division
+	BL Bin_t0_7Seg
+	LSL R8, R8, #8
+	ORR R8,R8, R2
+	
+	MOV R1, #10
+	BL Division
+	BL Bin_t0_7Seg
+	LSL R8, R8, #8
+	ORR R8,R8, R2
+
+	MOV R1, #1
+	BL Division
+	BL Bin_t0_7Seg
+	LSL R8, R8, #8
+	ORR R8,R8, R2
+	
+	LDR R3, =0xFF200020
+	MOV R6, #4
+	loopf:	
+		AND R5, R8, #0xff
+		STRB R5, [R3], #1
+		LSR R8, R8, #8
+		SUBS R6, R6, #1
+		BNE loopf
+	
+	//BX LR
+	
+	PUSH {R1-R7, PC}
+Division:
+	PUSH {LR}
+	MOV R7, #0			// digit counter
+	loopd:
+		CMP R0, R1
+		BLT Done
+		SUB R0, R0, R1
+		ADD R7, R7, #1
+	
+		BGT loopd
+Done:
+	MOV R2, R7
+	POP {PC}
+	
+Bin_t0_7Seg:
+	push {r3, lr}
+	LDR R3, =SEG_TABLE
+	LDRB R2, [R3, R2]	// // OFFSET UPDATE BASE + R2 = arr r2 value
+	pop {r3, pc}
+	
+// -------------------------------------------------
+PRICE_LIST:
+.word 120, 250, 375, 999
+.word 430, 85, 760, 1500
+.word 60, 45, 888, 321
+.word 1550, 700, 42, 510
+SEG_TABLE:
+.byte 0x3F,0x06,0x5B,0x4F
+.byte 0x66,0x6D,0x7D,0x07
+.byte 0x7F,0x6F, 0,0
+
+.end
+
